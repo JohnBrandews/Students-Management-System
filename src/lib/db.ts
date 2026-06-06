@@ -1,24 +1,29 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
 declare global {
-  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 
 let prisma: PrismaClient;
 
-const getUrl = () => {
-  return process.env.DATABASE_URL ?? "file:dev.db";
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL is required");
+}
+
+const createPrismaClient = () => {
+  const adapter = new PrismaNeon({ connectionString });
+  return new PrismaClient({ adapter });
 };
 
 if (process.env.NODE_ENV === "production") {
-  const adapter = new PrismaBetterSqlite3({ url: getUrl() });
-  prisma = new PrismaClient({ adapter });
+  prisma = createPrismaClient();
 } else {
   if (!global.prisma) {
-    const adapter = new PrismaBetterSqlite3({ url: getUrl() });
-    global.prisma = new PrismaClient({ adapter });
+    global.prisma = createPrismaClient();
   }
   prisma = global.prisma;
 }

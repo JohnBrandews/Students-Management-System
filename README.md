@@ -5,7 +5,7 @@ Welcome to the **Ikonex Academy Student Management System**, a production-ready,
 ## Tech Stack
 - **Frontend**: Next.js 15 (App Router, dynamic page optimization), React 19, Tailwind CSS v4, Shadcn UI style variables, Recharts analytics, and Lucide React icons.
 - **Backend**: Next.js API endpoints, NextAuth.js credentials provider with JWT session handling, and role-based access control (RBAC).
-- **Database ORM**: Prisma 7, using SQLite for local development now and ready to migrate to PostgreSQL on Neon later.
+- **Database ORM**: Prisma 7, using PostgreSQL on Neon with the Prisma Neon adapter.
 - **Testing**: Native Node.js test runner for fast, high-performance unit assertions.
 
 ---
@@ -54,13 +54,12 @@ npm install
 ```
 
 ### 2. Configure Database & Seed Data
-Initialize the SQLite schema and seed the default Super Admin user, class streams, and mock student data:
+Initialize the PostgreSQL schema and seed the default Super Admin user, class streams, and mock student data:
 ```bash
-npx prisma db push
+npx prisma migrate deploy
 npx tsx prisma/seed.ts
 ```
-
-When you are ready to move to Neon/PostgreSQL, update the `DATABASE_URL`, install the matching Prisma adapter, and switch the database client wiring accordingly.
+The app uses `DATABASE_URL` for the pooled Neon connection and `DIRECT_URL` for Prisma CLI migration work.
 
 ### 3. Run Development Server
 ```bash
